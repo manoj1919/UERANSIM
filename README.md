@@ -7,12 +7,7 @@
 <img src="https://img.shields.io/badge/License-GPL--3.0-green"/>
 </p>
 
-**This fork is for learning and experimentaion with UERANSIM. So please donot use it , it might be full of bugs and issues. Use original [UERANSIM] (https://github.com/aligungr/UERANSIM/)**
-
-
 **UERANSIM** <small>(pronounced "ju-i ræn sɪm")</small>, is the open-source state-of-the-art 5G UE and RAN (gNodeB) implementation. It can be considered as a 5G mobile phone and a base station in basic terms. The project can be used for testing 5G Core Network and studying 5G System.
-
-
 
 ## Current Status
 Our UE and gNodeB are functional and ready to use. You can connect them to your 5G core network right now and start using it. 
