@@ -313,10 +313,10 @@ void NgapTask::handleXnHandover()
             *pdu, asn_DEF_ASN_NGAP_UESecurityCapabilities, ASN_NGAP_ProtocolIE_ID_id_UESecurityCapabilities,
             ASN_NGAP_Criticality_ignore, [this](void *mem) {
                 auto *sec = reinterpret_cast<ASN_NGAP_UESecurityCapabilities *>(mem); 
-                asn::SetBitString(sec->nRencryptionAlgorithms, OctetString::FromHex("0xff"));
-                asn::SetBitString(sec->nRintegrityProtectionAlgorithms, OctetString::FromHex("0xff")) ;
-                asn::SetBitString(sec->eUTRAencryptionAlgorithms, OctetString::FromHex("0xff")) ;
-                asn::SetBitString(sec->eUTRAintegrityProtectionAlgorithms, OctetString::FromHex("0xff")) ;
+                asn::SetBitString(sec->nRencryptionAlgorithms, OctetString::FromHex("FFFF"));
+                asn::SetBitString(sec->nRintegrityProtectionAlgorithms, OctetString::FromHex("FFFF")) ;
+                asn::SetBitString(sec->eUTRAencryptionAlgorithms, OctetString::FromHex("FFFF")) ;
+                asn::SetBitString(sec->eUTRAintegrityProtectionAlgorithms, OctetString::FromHex("FFFF")) ;
             });
 
          /*asn::ngap::AddProtocolIeIfUsable(
