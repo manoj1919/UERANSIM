@@ -144,7 +144,9 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
         break;
     }
     case app::GnbCliCommand::HANDOVER: {
-        m_base->ngapTask->handleXnHandover();
+        auto m_sessions = m_base->gtpTask->m_sessionTree;
+        m_base->ngapTask->handleXnHandover(m_sessions);
+        
         break;
     }
 }

@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <utils/logger.hpp>
 #include <utils/nts.hpp>
+#include <gnb/gtp/utils.hpp>
 
 #include <gnb/nts.hpp>
 #include <gnb/types.hpp>
@@ -79,7 +80,7 @@ class NgapTask : public NtsTask
     void handleAssociationShutdown(int amfId);
     void sendNgSetupRequest(int amfId);
     void sendErrorIndication(int amfId, NgapCause cause = NgapCause::Protocol_unspecified, int ueId = 0);
-    void handleXnHandover();
+    void handleXnHandover(PduSessionTree sessiontree);
     void receiveNgSetupResponse(int amfId, ASN_NGAP_NGSetupResponse *msg);
     void receiveNgSetupFailure(int amfId, ASN_NGAP_NGSetupFailure *msg);
     void receiveErrorIndication(int amfId, ASN_NGAP_ErrorIndication *msg);

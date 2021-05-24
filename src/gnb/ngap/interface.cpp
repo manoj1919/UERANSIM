@@ -9,12 +9,13 @@
 #include "task.hpp"
 #include "utils.hpp"
 #include "encode.hpp"
-
+#include <map>
+#include <iostream>
 #include <algorithm>
 #include <gnb/app/task.hpp>
 #include <gnb/rrc/task.hpp>
 #include <gnb/sctp/task.hpp>
-
+#include <OCTET_STRING.h>
 #include <asn/ngap/ASN_NGAP_AMFConfigurationUpdate.h>
 #include <asn/ngap/ASN_NGAP_AMFConfigurationUpdateFailure.h>
 #include <asn/ngap/ASN_NGAP_AMFName.h>
@@ -252,7 +253,7 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
         sendNgapNonUe(amfId, pdu);
 }
 
-void NgapTask::handleXnHandover()
+void NgapTask::handleXnHandover(PduSessionTree m_sessionTree)
 {
     int ueId = 3;
     m_logger->debug("handle Xn handover ueId: %d", ueId);
@@ -318,7 +319,15 @@ void NgapTask::handleXnHandover()
                 asn::SetBitString(sec->eUTRAencryptionAlgorithms, OctetString::FromHex("FFFF")) ;
                 asn::SetBitString(sec->eUTRAintegrityProtectionAlgorithms, OctetString::FromHex("FFFF")) ;
             });
-
+        std::printf("check here");
+        auto vi=OctetString::FromHex("FFFF");
+        auto v= vi.data();
+        std::cout << v << std::endl;
+        auto m=m_sessionTree.findBySessionId(ueId,1);
+        std::cout << m << std::endl;
+        /*for (int i = 0; i < v.size(); i++){
+            std::cout << v[i] << " ";
+        };*/
          /*asn::ngap::AddProtocolIeIfUsable(
             *pdu, asn_DEF_ASN_NGAP_PDUSessionResourceToBeSwitchedDLList, ASN_NGAP_ProtocolIE_ID_id_PDUSessionResourceToBeSwitchedDLList,
             ASN_NGAP_Criticality_reject, [this](void *mem) {
