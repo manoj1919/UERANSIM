@@ -50,7 +50,7 @@ class GtpTask : public NtsTask
     void handleSessionCreate(PduSessionResource *session);
     void handleUeContextDelete(int ueId);
     void handleUplinkData(int ueId, int psi, OctetString &&data);
-
+    int return_map_pdusessions(int ueId);
     void updateAmbrForUe(int ueId);
     void updateAmbrForSession(uint64_t pduSession);
 };

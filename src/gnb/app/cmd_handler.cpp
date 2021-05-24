@@ -7,7 +7,7 @@
 //
 
 #include "cmd_handler.hpp"
-
+#include <iostream>
 #include <gnb/app/task.hpp>
 #include <gnb/gtp/task.hpp>
 #include <gnb/mr/task.hpp>
@@ -144,8 +144,13 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
         break;
     }
     case app::GnbCliCommand::HANDOVER: {
-        auto m_sessions = m_base->gtpTask->m_sessionTree;
-        m_base->ngapTask->handleXnHandover(m_sessions);
+        auto m_sessiontree = m_base->gtpTask->m_sessionTree;
+        for(int x=0; x<15; x=x+1){
+            auto i= m_base->gtpTask->return_map_pdusessions(x);
+            std::cout<<"the teid"<<x<<": "<<i<<std::endl;
+        }
+        /*auto *m_sessions = m_base->gtpTask->return_map_pdusessions();*/
+        m_base->ngapTask->handleXnHandover(m_sessiontree);
         
         break;
     }

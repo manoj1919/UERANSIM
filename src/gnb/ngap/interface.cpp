@@ -253,7 +253,7 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
         sendNgapNonUe(amfId, pdu);
 }
 
-void NgapTask::handleXnHandover(PduSessionTree m_sessionTree)
+void NgapTask::handleXnHandover(nr::gnb::PduSessionTree m_sessionTree)
 {
     int ueId = 3;
     m_logger->debug("handle Xn handover ueId: %d", ueId);
@@ -320,11 +320,12 @@ void NgapTask::handleXnHandover(PduSessionTree m_sessionTree)
                 asn::SetBitString(sec->eUTRAintegrityProtectionAlgorithms, OctetString::FromHex("FFFF")) ;
             });
         std::printf("check here");
-        auto vi=OctetString::FromHex("FFFF");
-        auto v= vi.data();
-        std::cout << v << std::endl;
-        auto m=m_sessionTree.findBySessionId(ueId,1);
+       /* auto m=m_sessionTree.findBySessionId(ueId,1);
         std::cout << m << std::endl;
+        auto teid=m_sessionTree.return_teid_map();
+        if (teid.size() >= m){
+            std::cout << teid[m] << std::endl;
+        }*/
         /*for (int i = 0; i < v.size(); i++){
             std::cout << v[i] << " ";
         };*/

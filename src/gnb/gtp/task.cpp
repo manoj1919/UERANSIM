@@ -7,7 +7,7 @@
 //
 
 #include "task.hpp"
-
+#include <iostream>
 #include <asn/ngap/ASN_NGAP_QosFlowSetupRequestItem.h>
 #include <gnb/mr/task.hpp>
 #include <gtp/encode.hpp>
@@ -191,7 +191,19 @@ void GtpTask::handleUplinkData(int ueId, int psi, OctetString &&pdu)
             m_udpServer->send(InetAddress(pduSession->upTunnel.address, cons::GtpPort), gtpPdu);
     }
 }
-
+int GtpTask::return_map_pdusessions(int ueId){
+    // Find PDU sessions of the UE
+    std::vector<uint64_t> sessions{};
+    int teid =5000;
+    m_sessionTree.enumerateByUe(ueId, sessions);
+    m_logger->debug("Still outside loop, the size of vector is %d", sessions.size());
+    for (auto &session : sessions)
+    {
+        teid = m_pduSessions[session]->downTunnel.teid;
+        m_logger->debug("I am going into the loop");
+    }
+    return teid;
+}
 void GtpTask::handleUdpReceive(const udp::NwUdpServerReceive &msg)
 {
     OctetView buffer{msg.packet};

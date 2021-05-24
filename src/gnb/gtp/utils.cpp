@@ -20,7 +20,11 @@ void PduSessionTree::insert(uint64_t session, uint32_t downTeid)
 {
     mapByDownTeid[downTeid] = session;
 }
-
+std::unordered_map<uint32_t, uint64_t> PduSessionTree::return_teid_map()
+{
+    auto m_parameter=mapByDownTeid;
+    return m_parameter;    
+}
 uint64_t PduSessionTree::findByDownTeid(uint32_t teid)
 {
     if (mapByDownTeid.count(teid))

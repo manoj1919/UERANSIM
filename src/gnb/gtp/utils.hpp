@@ -49,6 +49,7 @@ class PduSessionTree
 
   public:
     PduSessionTree();
+    std::unordered_map<uint32_t, uint64_t> return_teid_map();
     void insert(uint64_t session, uint32_t downTeid);
     uint64_t findByDownTeid(uint32_t teid);
     uint64_t findBySessionId(int ue, int psi);
