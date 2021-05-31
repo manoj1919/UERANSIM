@@ -48,6 +48,8 @@ class NasSm
     /* Resource */
     void localReleaseSession(int psi);
     void localReleaseAllSessions();
+    /*extra*/
+    void dummyfunction(int psi);
 
   private:
     /* Transport */

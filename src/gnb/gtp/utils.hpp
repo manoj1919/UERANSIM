@@ -45,12 +45,12 @@ class IRateLimiter
 class PduSessionTree
 {
     std::unordered_map<uint32_t, uint64_t> mapByDownTeid;
-    std::unordered_map<int, std::unordered_map<int, uint64_t>> mapByUeId;
+    std::unordered_map<int, std::unordered_map<uint32_t, uint64_t>> mapByUeId;
 
   public:
     PduSessionTree();
     std::unordered_map<uint32_t, uint64_t> return_teid_map();
-    void insert(uint64_t session, uint32_t downTeid);
+    void insert(uint64_t session, uint32_t downTeid,int ue);
     uint64_t findByDownTeid(uint32_t teid);
     uint64_t findBySessionId(int ue, int psi);
     void remove(uint64_t session, uint32_t downTeid);

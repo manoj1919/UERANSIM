@@ -16,9 +16,17 @@ PduSessionTree::PduSessionTree() : mapByDownTeid{}, mapByUeId{}
 {
 }
 
-void PduSessionTree::insert(uint64_t session, uint32_t downTeid)
+void PduSessionTree::insert(uint64_t session, uint32_t downTeid, int ueid)
 {
     mapByDownTeid[downTeid] = session;
+    if (mapByUeId.find(ueid)==mapByUeId.end()){
+        std::unordered_map<uint32_t, uint64_t> temp_map;
+        temp_map[downTeid]=session;
+        mapByUeId[ueid]=temp_map;
+    }
+    else{
+        mapByUeId[ueid].insert(std::make_pair(downTeid,session));
+    }
 }
 std::unordered_map<uint32_t, uint64_t> PduSessionTree::return_teid_map()
 {

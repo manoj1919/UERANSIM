@@ -329,12 +329,12 @@ void NgapTask::handleXnHandover(nr::gnb::PduSessionTree m_sessionTree)
         /*for (int i = 0; i < v.size(); i++){
             std::cout << v[i] << " ";
         };*/
-         /*asn::ngap::AddProtocolIeIfUsable(
+        /*asn::ngap::AddProtocolIeIfUsable(
             *pdu, asn_DEF_ASN_NGAP_PDUSessionResourceToBeSwitchedDLList, ASN_NGAP_ProtocolIE_ID_id_PDUSessionResourceToBeSwitchedDLList,
             ASN_NGAP_Criticality_reject, [this](void *mem) {
                 auto *PDUList = reinterpret_cast<ASN_NGAP_PDUSessionResourceToBeSwitchedDLList *>(mem); 
-                ASN_NGAP_PDUSessionResourceToBeSwitchedDLItem  -- PDU session id = 1
-            });  */  
+                PDUList->list
+            });  */ 
     }
 
 

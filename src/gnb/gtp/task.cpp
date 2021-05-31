@@ -117,7 +117,10 @@ void GtpTask::handleSessionCreate(PduSessionResource *session)
     uint64_t sessionInd = MakeSessionResInd(session->ueId, session->psi);
     m_pduSessions[sessionInd] = std::unique_ptr<PduSessionResource>(session);
 
-    m_sessionTree.insert(sessionInd, session->downTunnel.teid);
+    m_sessionTree.insert(sessionInd, session->downTunnel.teid, session->ueId);
+    m_logger->debug("ue id: %d",session->ueId);
+    m_logger->debug("session id: %d",sessionInd);
+    m_logger->debug("tunnel id: %d",session->downTunnel.teid);
 
     updateAmbrForUe(session->ueId);
     updateAmbrForSession(sessionInd);
@@ -191,18 +194,22 @@ void GtpTask::handleUplinkData(int ueId, int psi, OctetString &&pdu)
             m_udpServer->send(InetAddress(pduSession->upTunnel.address, cons::GtpPort), gtpPdu);
     }
 }
-int GtpTask::return_map_pdusessions(int ueId){
+uint8_t* GtpTask::return_map_pdusessions(int ueId){
     // Find PDU sessions of the UE
     std::vector<uint64_t> sessions{};
-    int teid =5000;
+    uint8_t *teid;
     m_sessionTree.enumerateByUe(ueId, sessions);
     m_logger->debug("Still outside loop, the size of vector is %d", sessions.size());
     for (auto &session : sessions)
     {
-        teid = m_pduSessions[session]->downTunnel.teid;
+        teid = m_pduSessions[session]->downTunnel.address.data();
         m_logger->debug("I am going into the loop");
     }
+    /*for (auto const& x : m_pduSessions){
+        m_logger->debug("first: %d and second: %d \n", x.first,x.second);
+    }*/
     return teid;
+    
 }
 void GtpTask::handleUdpReceive(const udp::NwUdpServerReceive &msg)
 {

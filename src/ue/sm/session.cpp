@@ -95,10 +95,19 @@ void NasSm::receivePduSessionEstablishmentAccept(const nas::PduSessionEstablishm
     auto *statusUpdate = new NwUeStatusUpdate(NwUeStatusUpdate::SESSION_ESTABLISHMENT);
     statusUpdate->pduSession = &pduSession;
     m_base->appTask->push(statusUpdate);
+    dummyfunction(pduSession.id);
 
-    m_logger->info("PDU Session establishment is successful PSI[%d]", pduSession.id);
+    
 }
-
+void NasSm::dummyfunction(int pdusessionid){
+    auto &pduSession = m_pduSessions[pdusessionid];
+    m_logger->info("PDU Session establishment is successful PSI[%d]", pduSession.id);
+    m_logger->info("PDU Session establishment is successful session type[%d]", pduSession.sessionType);
+    m_logger->info("PDU Session establishment is successful len of Qos flow descriptors[%d]", sizeof(pduSession.authorizedQoSFlowDescriptions));
+    /*for(int i=0; i<=int(sizeof(pduSession.authorizedQoSFlowDescriptions)); i=i+1 ){
+        m_logger->info("PDU Session data", pduSession.authorizedQoSFlowDescriptions[i]);
+    }*/
+}
 void NasSm::receivePduSessionEstablishmentReject(const nas::PduSessionEstablishmentReject &msg)
 {
     m_logger->err("PDU Session Establishment Reject received [%s]", nas::utils::EnumToString(msg.smCause.value));

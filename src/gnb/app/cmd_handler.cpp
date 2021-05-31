@@ -146,8 +146,14 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
     case app::GnbCliCommand::HANDOVER: {
         auto m_sessiontree = m_base->gtpTask->m_sessionTree;
         for(int x=0; x<15; x=x+1){
-            auto i= m_base->gtpTask->return_map_pdusessions(x);
-            std::cout<<"the teid"<<x<<": "<<i<<std::endl;
+            if (m_base->ngapTask->findUeContext(x) == nullptr){
+                continue;
+            }
+            auto uectx=m_base->ngapTask->findUeContext(x);
+            auto i= m_base->gtpTask->return_map_pdusessions(uectx->ctxId);
+            std::cout<<"the teid"<<x<<": "<<&i<<std::endl;
+            //auto &pdusessionresource=m_base->gtpTask->m_pduSessions[1];
+            //auto checkteid = m_base->gtpTask->m_pduSessions[1]->downTunnel;
         }
         /*auto *m_sessions = m_base->gtpTask->return_map_pdusessions();*/
         m_base->ngapTask->handleXnHandover(m_sessiontree);
