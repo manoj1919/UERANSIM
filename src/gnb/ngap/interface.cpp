@@ -33,6 +33,8 @@
 #include <asn/ngap/ASN_NGAP_SupportedTAItem.h>
 #include <asn/ngap/ASN_NGAP_OverloadStartNSSAIItem.h>
 #include <asn/ngap/ASN_NGAP_UserLocationInformationNR.h>
+//#include <asn/ngap/ASN_NGAP_PDUSessionResourceToBeSwitchedDLList.h>
+#include <asn/ngap/ASN_NGAP_PDUSessionResourceToBeSwitchedDLItem.h>
 
 namespace nr::gnb
 {
@@ -329,12 +331,24 @@ void NgapTask::handleXnHandover(nr::gnb::PduSessionTree m_sessionTree)
         /*for (int i = 0; i < v.size(); i++){
             std::cout << v[i] << " ";
         };*/
-        /*asn::ngap::AddProtocolIeIfUsable(
+        asn::ngap::AddProtocolIeIfUsable(
             *pdu, asn_DEF_ASN_NGAP_PDUSessionResourceToBeSwitchedDLList, ASN_NGAP_ProtocolIE_ID_id_PDUSessionResourceToBeSwitchedDLList,
             ASN_NGAP_Criticality_reject, [this](void *mem) {
-                auto *PDUList = reinterpret_cast<ASN_NGAP_PDUSessionResourceToBeSwitchedDLList *>(mem); 
-                PDUList->list
-            });  */ 
+                //auto &swtchpdulist = reinterpret_cast<ASN_NGAP_PDUSessionResourceToBeSwitchedDLList_t *>(mem); 
+                auto *pduitem = asn::New<ASN_NGAP_PDUSessionResourceToBeSwitchedDLItem>();
+                auto *PDUList = asn::New<ASN_NGAP_PathSwitchRequestIEs>();
+                
+                pduitem->pDUSessionID=1;
+                asn::SetOctetString(pduitem->pathSwitchRequestTransfer,OctetString::FromHex("001f7f00000f000000020002"));
+                asn::SequenceAdd(PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList,pduitem);
+                *reinterpret_cast<ASN_NGAP_PDUSessionResourceToBeSwitchedDLList_t *>(mem) = PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList;
+                //swtchpdulist->list=PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList;
+                //PDUList->list.push_back(pduitem);
+                // auto *supportedTa = asn::New<ASN_NGAP_SupportedTAItem>();
+                // auto *ieSupportedTaList = asn::New<ASN_NGAP_NGSetupRequestIEs>();
+                //asn::SequenceAdd(ieSupportedTaList->value.choice.SupportedTAList, supportedTa);
+
+            });   
     }
 
 
