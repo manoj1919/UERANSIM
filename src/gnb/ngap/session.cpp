@@ -136,6 +136,10 @@ void NgapTask::receiveSessionResourceSetupRequest(int amfId, ASN_NGAP_PDUSession
                 asn::SetBitString(upInfo.choice.gTPTunnel->transportLayerAddress, resource->downTunnel.address);
                 asn::SetOctetString4(upInfo.choice.gTPTunnel->gTP_TEID, (octet4)resource->downTunnel.teid);
 
+                m_logger->debug("PDU session id : %d", resource->psi);
+                m_logger->debug("TEID : %d ", resource->downTunnel.teid);
+                m_logger->debug("Tunnel_Address : %x ", resource->downTunnel.address.toHexString());
+
                 OctetString encodedTr =
                     ngap_encode::EncodeS(asn_DEF_ASN_NGAP_PDUSessionResourceSetupResponseTransfer, tr);
 

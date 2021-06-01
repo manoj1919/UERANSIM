@@ -255,7 +255,7 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
         sendNgapNonUe(amfId, pdu);
 }
 
-void NgapTask::handleXnHandover(nr::gnb::PduSessionTree m_sessionTree)
+void NgapTask::handleXnHandover() //nr::gnb::PduSessionTree m_sessionTree
 {
     int ueId = 3;
     m_logger->debug("handle Xn handover ueId: %d", ueId);
