@@ -128,6 +128,7 @@ void NgapTask::receiveSessionResourceSetupRequest(int amfId, ASN_NGAP_PDUSession
                     auto *associatedQosFlowItem = asn::New<ASN_NGAP_AssociatedQosFlowItem>();
                     associatedQosFlowItem->qosFlowIdentifier = qosList.array[iQos]->qosFlowIdentifier;
                     asn::SequenceAdd(tr->dLQosFlowPerTNLInformation.associatedQosFlowList, associatedQosFlowItem);
+                    m_logger->debug("QoS Flow ID : %d", associatedQosFlowItem->qosFlowIdentifier);
                 }
 
                 auto &upInfo = tr->dLQosFlowPerTNLInformation.uPTransportLayerInformation;
@@ -138,7 +139,7 @@ void NgapTask::receiveSessionResourceSetupRequest(int amfId, ASN_NGAP_PDUSession
 
                 m_logger->debug("PDU session id : %d", resource->psi);
                 m_logger->debug("TEID : %d ", resource->downTunnel.teid);
-                m_logger->debug("Tunnel_Address : %x ", resource->downTunnel.address.toHexString());
+                m_logger->debug("Tunnel_Address : %d ", *(resource->downTunnel.address.data()+1) );
 
                 OctetString encodedTr =
                     ngap_encode::EncodeS(asn_DEF_ASN_NGAP_PDUSessionResourceSetupResponseTransfer, tr);
@@ -225,6 +226,7 @@ std::optional<NgapCause> NgapTask::setupPduSessionResource(PduSessionResource *r
         return NgapCause::Protocol_semantic_error;
     }
 
+    m_logger->debug("GTP IP = %s", m_base->config->gtpIp);
     resource->downTunnel.address = utils::IpToOctetString(m_base->config->gtpIp);
     resource->downTunnel.teid = ++m_downlinkTeidCounter;
 

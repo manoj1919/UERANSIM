@@ -173,7 +173,11 @@ std::unique_ptr<GnbCliCommand> ParseGnbCliCommand(std::vector<std::string> &&tok
     }
     else if (subCmd == "handover")
     {
-        return std::make_unique<GnbCliCommand>(GnbCliCommand::HANDOVER);
+        auto cmd = std::make_unique<GnbCliCommand>(GnbCliCommand::HANDOVER);
+        cmd->ueId = utils::ParseInt(options.getPositional(0));
+        cmd->string_tunnel_address = options.getPositional(1);
+        return cmd;
+        //return std::make_unique<GnbCliCommand>(GnbCliCommand::HANDOVER);
     }
     return nullptr;
 }

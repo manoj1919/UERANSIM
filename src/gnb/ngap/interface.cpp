@@ -255,10 +255,11 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
         sendNgapNonUe(amfId, pdu);
 }
 
-void NgapTask::handleXnHandover() //nr::gnb::PduSessionTree m_sessionTree
+void NgapTask::handleXnHandover(int ueId, std::string string_tunnel_address) //nr::gnb::PduSessionTree m_sessionTree
 {
-    int ueId = 3;
+    //int ueId = 3;
     m_logger->debug("handle Xn handover ueId: %d", ueId);
+    m_logger->debug("handle Xn handover string: %s", string_tunnel_address);
 
     auto *pdu = asn::ngap::NewMessagePdu<ASN_NGAP_PathSwitchRequest>({});
 
@@ -303,13 +304,13 @@ void NgapTask::handleXnHandover() //nr::gnb::PduSessionTree m_sessionTree
                 loc->choice.userLocationInformationNR = asn::New<ASN_NGAP_UserLocationInformationNR>();
 
                 auto &nr = loc->choice.userLocationInformationNR;
-                nr->timeStamp = asn::New<ASN_NGAP_TimeStamp_t>();
+                //nr->timeStamp = asn::New<ASN_NGAP_TimeStamp_t>();
 
                 ngap_utils::ToPlmnAsn_Ref(m_base->config->plmn, nr->nR_CGI.pLMNIdentity);
                 asn::SetBitStringLong<36>(m_base->config->nci, nr->nR_CGI.nRCellIdentity);
                 ngap_utils::ToPlmnAsn_Ref(m_base->config->plmn, nr->tAI.pLMNIdentity);
                 asn::SetOctetString3(nr->tAI.tAC, octet3{m_base->config->tac});
-                asn::SetOctetString4(*nr->timeStamp, octet4{utils::CurrentTimeStamp().seconds32()});
+                //asn::SetOctetString4(*nr->timeStamp, octet4{utils::CurrentTimeStamp().seconds32()});
             });
 
         asn::ngap::AddProtocolIeIfUsable(
@@ -321,7 +322,7 @@ void NgapTask::handleXnHandover() //nr::gnb::PduSessionTree m_sessionTree
                 asn::SetBitString(sec->eUTRAencryptionAlgorithms, OctetString::FromHex("FFFF")) ;
                 asn::SetBitString(sec->eUTRAintegrityProtectionAlgorithms, OctetString::FromHex("FFFF")) ;
             });
-        std::printf("check here");
+        //std::printf("check here");
        /* auto m=m_sessionTree.findBySessionId(ueId,1);
         std::cout << m << std::endl;
         auto teid=m_sessionTree.return_teid_map();
@@ -339,7 +340,9 @@ void NgapTask::handleXnHandover() //nr::gnb::PduSessionTree m_sessionTree
                 auto *PDUList = asn::New<ASN_NGAP_PathSwitchRequestIEs>();
                 
                 pduitem->pDUSessionID=1;
-                asn::SetOctetString(pduitem->pathSwitchRequestTransfer,OctetString::FromHex("001f7f00000f000000020002"));
+                //std::string ss = "001f"+string_tunnel_address+"000000010009";
+                std::string ss = "001fc0a81d8c000000010013";
+                asn::SetOctetString(pduitem->pathSwitchRequestTransfer,OctetString::FromHex(ss));//001f7f00000f000000010009
                 asn::SequenceAdd(PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList,pduitem);
                 *reinterpret_cast<ASN_NGAP_PDUSessionResourceToBeSwitchedDLList_t *>(mem) = PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList;
                 //swtchpdulist->list=PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList;

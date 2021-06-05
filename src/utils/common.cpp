@@ -175,6 +175,7 @@ TimeStamp utils::CurrentTimeStamp()
 
 OctetString utils::IpToOctetString(const std::string &address)
 {
+    
     int ipVersion = GetIpVersion(address);
     if (ipVersion == 4)
     {
@@ -190,6 +191,7 @@ OctetString utils::IpToOctetString(const std::string &address)
         data[2] = bytes[2];
         data[3] = bytes[3];
 
+        printf("IpToOctetString %d.%d.%d.%d\n", data[0], data[1], data[2], data[3]);
         return OctetString(std::move(data));
     }
     else if (ipVersion == 6)

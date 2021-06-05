@@ -33,6 +33,7 @@ struct GnbCliCommand
     
     // HANDOVER
     int ueId{};
+    std::string string_tunnel_address{};
 
     explicit GnbCliCommand(PR present) : present(present)
     {

@@ -156,7 +156,12 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
             //auto checkteid = m_base->gtpTask->m_pduSessions[1]->downTunnel;
         }*/
         // auto *m_sessions = m_base->gtpTask->return_map_pdusessions();
-        m_base->ngapTask->handleXnHandover();//m_sessiontree
+
+        int ueid = msg.cmd->ueId;
+        std::string str_tun_addr = msg.cmd->string_tunnel_address;
+        std::cout << " ueid: "<< ueid << std::endl;
+        std::cout << " tunnel address: "<< str_tun_addr << std::endl;
+        m_base->ngapTask->handleXnHandover(ueid,str_tun_addr);//m_sessiontree
         
         break;
     }
