@@ -80,6 +80,7 @@ class NgapTask : public NtsTask
     void handleAssociationShutdown(int amfId);
     void sendNgSetupRequest(int amfId);
     void sendErrorIndication(int amfId, NgapCause cause = NgapCause::Protocol_unspecified, int ueId = 0);
+    void handoverPreparation(int ueId);
     void handleXnHandover(int ueId, std::string string_tunnel_address );//PduSessionTree sessiontree
     void receiveNgSetupResponse(int amfId, ASN_NGAP_NGSetupResponse *msg);
     void receiveNgSetupFailure(int amfId, ASN_NGAP_NGSetupFailure *msg);

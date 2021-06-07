@@ -25,14 +25,18 @@ struct GnbCliCommand
         AMF_INFO,
         UE_LIST,
         UE_COUNT,
+        HANDOVERPREPARE,
         HANDOVER
     } present;
 
     // AMF_INFO
     int amfId{};
     
-    // HANDOVER
+    // HANDOVERPREPARE
     int ueId{};
+
+    // HANDOVER
+    int UEId{};
     std::string string_tunnel_address{};
 
     explicit GnbCliCommand(PR present) : present(present)

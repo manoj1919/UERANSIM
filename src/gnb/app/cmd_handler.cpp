@@ -143,6 +143,15 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
         sendResult(msg.address, std::to_string(m_base->ngapTask->m_ueCtx.size()));
         break;
     }
+    case app::GnbCliCommand::HANDOVERPREPARE: {
+        int ueid = msg.cmd->ueId;
+        //std::string str_tun_addr = msg.cmd->string_tunnel_address;
+        std::cout << " ueid: "<< ueid << std::endl;
+        //std::cout << " tunnel address: "<< str_tun_addr << std::endl;
+        m_base->ngapTask->handoverPreparation(ueid);
+        
+        break;
+    }
     case app::GnbCliCommand::HANDOVER: {
         /*auto m_sessiontree = m_base->gtpTask->m_sessionTree;
         for(int x=0; x<15; x=x+1){
@@ -157,7 +166,7 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
         }*/
         // auto *m_sessions = m_base->gtpTask->return_map_pdusessions();
 
-        int ueid = msg.cmd->ueId;
+        int ueid = msg.cmd->UEId;
         std::string str_tun_addr = msg.cmd->string_tunnel_address;
         std::cout << " ueid: "<< ueid << std::endl;
         std::cout << " tunnel address: "<< str_tun_addr << std::endl;

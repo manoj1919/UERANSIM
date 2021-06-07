@@ -69,15 +69,17 @@ static std::map<std::string, std::string> g_gnbCmdToDescription = {
     {"ue-list", "List all UEs associated with the gNB"},
     {"ue-count", "Print the total number of UEs connected the this gNB"},
     {"handover", "Perform handover for the given UE"},
+    {"handover-prepare", "Prepare for handover for the given UE"},
 };
 
 static std::map<std::string, std::string> g_gnbCmdToUsage = {
-    {"status", ""}, {"info", ""}, {"amf-list", ""}, {"amf-info", "<amf-id>"}, {"ue-list", ""}, {"ue-count", ""},{"handover", ""}
+    {"status", ""}, {"info", ""}, {"amf-list", ""}, {"amf-info", "<amf-id>"}, {"ue-list", ""}, {"ue-count", ""},{"handover", ""},{"handover-prepare", "<ue-id>"}
 };
 
 static std::map<std::string, bool> g_gnbCmdToHelpIfEmpty = {{"status", false},   {"info", false},
                                                             {"amf-list", false}, {"amf-info", true},
-                                                            {"ue-list", false},  {"ue-count", false}, {"handover", false}};
+                                                            {"ue-list", false},  {"ue-count", false}, {"handover", false}, 
+                                                            {"handover-prepare", true}};
 
 static std::map<std::string, std::string> g_ueCmdToDescription = {
     {"info", "Show some information about the UE"},
@@ -171,13 +173,19 @@ std::unique_ptr<GnbCliCommand> ParseGnbCliCommand(std::vector<std::string> &&tok
     {
         return std::make_unique<GnbCliCommand>(GnbCliCommand::UE_COUNT);
     }
+    else if (subCmd == "handover-prepare")
+    {
+        auto cmd = std::make_unique<GnbCliCommand>(GnbCliCommand::HANDOVERPREPARE);
+        cmd->ueId = utils::ParseInt(options.getPositional(0));
+        return cmd;
+    }
     else if (subCmd == "handover")
     {
         auto cmd = std::make_unique<GnbCliCommand>(GnbCliCommand::HANDOVER);
-        cmd->ueId = utils::ParseInt(options.getPositional(0));
+        cmd->UEId = utils::ParseInt(options.getPositional(0));
         cmd->string_tunnel_address = options.getPositional(1);
         return cmd;
-        //return std::make_unique<GnbCliCommand>(GnbCliCommand::HANDOVER);
+        //return std::make_unique<GnbCliCommand>(GnbCliCommand::);
     }
     return nullptr;
 }

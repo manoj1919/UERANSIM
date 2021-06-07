@@ -255,6 +255,41 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
         sendNgapNonUe(amfId, pdu);
 }
 
+void NgapTask::handoverPreparation(int ueId) 
+{
+    //int ueId = 3;
+    // Print the various parameters to pass on to handleXnHandover
+    m_logger->debug("handoverPreparation ueId: %d", ueId);
+    //m_logger->debug("handoverPreparation: %s", string_tunnel_address);
+
+    auto *pdu = asn::ngap::NewMessagePdu<ASN_NGAP_PathSwitchRequest>({});
+
+    /* Find UE and AMF contexts */
+
+    auto *ue = findUeContext(ueId);
+    if (ue == nullptr)
+    {
+        asn::Free(asn_DEF_ASN_NGAP_NGAP_PDU, pdu);
+        return;
+    }
+    m_logger->debug("amfId: %d", ue->associatedAmfId);
+    m_logger->debug("ue->amfUeNgapId: %d", ue->amfUeNgapId);
+    m_logger->debug("ue->ranUeNgapId: %d", ue->ranUeNgapId);
+
+    auto *amf = findAmfContext(ue->associatedAmfId);
+    if (amf == nullptr)
+    {
+        asn::Free(asn_DEF_ASN_NGAP_NGAP_PDU, pdu);
+        return;
+    }
+
+    m_logger->debug("amf->amfName: %s", amf->amfName);
+    std::cout << "amf->amfName: " << amf->amfName << "\n" ;
+    m_logger->debug("amf->ctxId: %d", amf->ctxId);
+    m_logger->debug("ue->uplinkStream: %d", ue->uplinkStream);
+
+}
+
 void NgapTask::handleXnHandover(int ueId, std::string string_tunnel_address) //nr::gnb::PduSessionTree m_sessionTree
 {
     //int ueId = 3;
@@ -339,6 +374,7 @@ void NgapTask::handleXnHandover(int ueId, std::string string_tunnel_address) //n
                 auto *pduitem = asn::New<ASN_NGAP_PDUSessionResourceToBeSwitchedDLItem>();
                 auto *PDUList = asn::New<ASN_NGAP_PathSwitchRequestIEs>();
                 
+                // Print PDUsession id and TEID and send as arguments
                 pduitem->pDUSessionID=1;
                 //std::string ss = "001f"+string_tunnel_address+"000000010009";
                 std::string ss = "001fc0a81d8c000000010013";
