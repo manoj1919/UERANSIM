@@ -367,7 +367,7 @@ void NgapTask::handleXnHandover(int asAmfId, int64_t amfUeNgapId, int64_t ranUeN
                 // Print PDUsession id and TEID and send as arguments
                 pduitem->pDUSessionID=1;
                 //std::string ss = "001f"+string_tunnel_address+"000000010009";
-                std::string ss = "001fc0a81d8c000000010013";
+                std::string ss = "001fc0a81dd9000000010013";
                 asn::SetOctetString(pduitem->pathSwitchRequestTransfer,OctetString::FromHex(ss));//001f7f00000f000000010009
                 asn::SequenceAdd(PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList,pduitem);
                 *reinterpret_cast<ASN_NGAP_PDUSessionResourceToBeSwitchedDLList_t *>(mem) = PDUList->value.choice.PDUSessionResourceToBeSwitchedDLList;
