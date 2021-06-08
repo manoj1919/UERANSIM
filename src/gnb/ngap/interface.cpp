@@ -309,7 +309,7 @@ void NgapTask::handleXnHandover(int asAmfId, int64_t amfUeNgapId, int64_t ranUeN
         if (amfUeNgapId > 0)
         {
             asn::ngap::AddProtocolIeIfUsable(*pdu, asn_DEF_ASN_NGAP_AMF_UE_NGAP_ID,
-                                             ASN_NGAP_ProtocolIE_ID_id_AMF_UE_NGAP_ID, ASN_NGAP_Criticality_reject,
+                                             ASN_NGAP_ProtocolIE_ID_id_SourceAMF_UE_NGAP_ID, ASN_NGAP_Criticality_reject,
                                              [ue](void *mem) {
                                                  auto &id = *reinterpret_cast<ASN_NGAP_AMF_UE_NGAP_ID_t *>(mem);
                                                  asn::SetSigned64(ue->amfUeNgapId, id);
