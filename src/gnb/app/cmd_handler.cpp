@@ -166,11 +166,16 @@ void GnbCmdHandler::handleCmdImpl(NwGnbCliCommand &msg)
         }*/
         // auto *m_sessions = m_base->gtpTask->return_map_pdusessions();
 
-        int ueid = msg.cmd->UEId;
-        std::string str_tun_addr = msg.cmd->string_tunnel_address;
-        std::cout << " ueid: "<< ueid << std::endl;
-        std::cout << " tunnel address: "<< str_tun_addr << std::endl;
-        m_base->ngapTask->handleXnHandover(ueid,str_tun_addr);//m_sessiontree
+    
+        int asAmfId = msg.cmd->asAmfId; 
+        int64_t amfUeNgapId = msg.cmd->amfUeNgapId;
+        int64_t ranUeNgapId = msg.cmd->ranUeNgapId;
+        int ctxtId = msg.cmd->ctxtId;
+        int ulStr = msg.cmd->ulStr;
+        std::string amf_name = msg.cmd->amf_name;
+        std::cout << " asAmfId: "<< asAmfId << std::endl;
+        std::cout << " amf_name: "<< amf_name << std::endl;
+        m_base->ngapTask->handleXnHandover(asAmfId, amfUeNgapId, ranUeNgapId, ctxtId, ulStr, amf_name);
         
         break;
     }
