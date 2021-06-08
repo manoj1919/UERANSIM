@@ -293,7 +293,7 @@ void NgapTask::handleXnHandover(int asAmfId, int64_t amfUeNgapId, int64_t ranUeN
 {
 
     m_logger->debug("handle Xn handover asAmfId: %d", asAmfId);
-    m_logger->debug("amf_Name: %s", amf_name);
+    m_logger->debug("amf_Name: %s", amf_name.c_str());
 
     auto *pdu = asn::ngap::NewMessagePdu<ASN_NGAP_PathSwitchRequest>({});
 
