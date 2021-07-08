@@ -8,14 +8,13 @@
 
 #include "task.hpp"
 #include "utils.hpp"
-#include "encode.hpp"
-#include <map>
-#include <iostream>
+
 #include <algorithm>
+
 #include <gnb/app/task.hpp>
 #include <gnb/rrc/task.hpp>
 #include <gnb/sctp/task.hpp>
-#include <OCTET_STRING.h>
+
 #include <asn/ngap/ASN_NGAP_AMFConfigurationUpdate.h>
 #include <asn/ngap/ASN_NGAP_AMFConfigurationUpdateFailure.h>
 #include <asn/ngap/ASN_NGAP_AMFName.h>
@@ -25,13 +24,14 @@
 #include <asn/ngap/ASN_NGAP_InitiatingMessage.h>
 #include <asn/ngap/ASN_NGAP_NGAP-PDU.h>
 #include <asn/ngap/ASN_NGAP_NGSetupRequest.h>
-#include <asn/ngap/ASN_NGAP_PathSwitchRequest.h>
+#include <asn/ngap/ASN_NGAP_OverloadStartNSSAIItem.h>
 #include <asn/ngap/ASN_NGAP_PLMNSupportItem.h>
 #include <asn/ngap/ASN_NGAP_ProtocolIE-Field.h>
 #include <asn/ngap/ASN_NGAP_ServedGUAMIItem.h>
 #include <asn/ngap/ASN_NGAP_SliceSupportItem.h>
 #include <asn/ngap/ASN_NGAP_SupportedTAItem.h>
-#include <asn/ngap/ASN_NGAP_OverloadStartNSSAIItem.h>
+// Pradnya
+#include "encode.hpp"
 #include <asn/ngap/ASN_NGAP_UserLocationInformationNR.h>
 //#include <asn/ngap/ASN_NGAP_PDUSessionResourceToBeSwitchedDLList.h>
 #include <asn/ngap/ASN_NGAP_PDUSessionResourceToBeSwitchedDLItem.h>
@@ -73,7 +73,7 @@ static void AssignDefaultAmfConfigs(NgapAmfContext *amf, T *msg)
             auto plmnSupport = new PlmnSupport();
             ngap_utils::PlmnFromAsn_Ref(item.pLMNIdentity, plmnSupport->plmn);
             asn::ForeachItem(item.sliceSupportList, [plmnSupport](ASN_NGAP_SliceSupportItem &ssItem) {
-                plmnSupport->sliceSupportList.push_back(ngap_utils::SliceSupportFromAsn_Unique(ssItem));
+                plmnSupport->sliceSupportList.slices.push_back(ngap_utils::SliceSupportFromAsn(ssItem));
             });
             amf->plmnSupportList.push_back(plmnSupport);
         });
@@ -104,7 +104,7 @@ void NgapTask::handleAssociationShutdown(int amfId)
 
     amf->state = EAmfState::NOT_CONNECTED;
 
-    auto *w = new NwGnbSctp(NwGnbSctp::CONNECTION_CLOSE);
+    auto *w = new NmGnbSctp(NmGnbSctp::CONNECTION_CLOSE);
     w->clientId = amfId;
     m_base->sctpTask->push(w);
 
@@ -113,7 +113,7 @@ void NgapTask::handleAssociationShutdown(int amfId)
 
 void NgapTask::sendNgSetupRequest(int amfId)
 {
-    m_logger->debug("Sending NG Setup Request: amfId = %d", amfId);
+    m_logger->debug("Sending NG Setup Request");
 
     auto *amf = findAmfContext(amfId);
     if (amf == nullptr)
@@ -145,7 +145,7 @@ void NgapTask::sendNgSetupRequest(int amfId)
 
     auto *broadcastPlmn = asn::New<ASN_NGAP_BroadcastPLMNItem>();
     asn::SetOctetString3(broadcastPlmn->pLMNIdentity, ngap_utils::PlmnToOctet3(m_base->config->plmn));
-    for (auto &nssai : m_base->config->nssais)
+    for (auto &nssai : m_base->config->nssai.slices)
     {
         auto *item = asn::New<ASN_NGAP_SliceSupportItem>();
         asn::SetOctetString1(item->s_NSSAI.sST, static_cast<uint8_t>(nssai.sst));
@@ -197,11 +197,11 @@ void NgapTask::receiveNgSetupResponse(int amfId, ASN_NGAP_NGSetupResponse *msg)
     {
         m_isInitialized = true;
 
-        auto *update = new NwGnbStatusUpdate(NwGnbStatusUpdate::NGAP_IS_UP);
+        auto *update = new NmGnbStatusUpdate(NmGnbStatusUpdate::NGAP_IS_UP);
         update->isNgapUp = true;
         m_base->appTask->push(update);
 
-        m_base->rrcTask->push(new NwGnbNgapToRrc(NwGnbNgapToRrc::NGAP_LAYER_INITIALIZED));
+        m_base->rrcTask->push(new NmGnbNgapToRrc(NmGnbNgapToRrc::RADIO_POWER_ON));
     }
 }
 
@@ -244,8 +244,8 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
     ieCause->value.present = ASN_NGAP_ErrorIndicationIEs__value_PR_Cause;
     ngap_utils::ToCauseAsn_Ref(cause, ieCause->value.choice.Cause);
 
-    m_logger->debug("Sending an error indication with cause: %s",
-                    ngap_utils::CauseToString(ieCause->value.choice.Cause).c_str());
+    m_logger->warn("Sending an error indication with cause: %s",
+                   ngap_utils::CauseToString(ieCause->value.choice.Cause).c_str());
 
     auto *pdu = asn::ngap::NewMessagePdu<ASN_NGAP_ErrorIndication>({ieCause});
 
@@ -255,13 +255,12 @@ void NgapTask::sendErrorIndication(int amfId, NgapCause cause, int ueId)
         sendNgapNonUe(amfId, pdu);
 }
 
+// Pradnya
 void NgapTask::handoverPreparation(int ueId) 
 {
 
     // Print the various parameters to pass on to handleXnHandover
     m_logger->debug("handoverPreparation ueId: %d", ueId);
-
-    //auto *pdu = asn::ngap::NewMessagePdu<ASN_NGAP_PathSwitchRequest>({});
 
     /* Find UE and AMF contexts */
 
@@ -283,12 +282,12 @@ void NgapTask::handoverPreparation(int ueId)
     }*/
 
     m_logger->debug("amf->amfName: %s", amf->amfName.c_str());
-    std::cout << "amf->amfName: " << amf->amfName << "\n" ;
     m_logger->debug("amf->ctxId: %d", amf->ctxId);
     m_logger->debug("ue->uplinkStream: %d", ue->uplinkStream);
 
 }
 
+// Pradnya
 void NgapTask::handleXnHandover(int asAmfId, int64_t amfUeNgapId, int64_t ranUeNgapId, int ctxtId, int ulStr, std::string amf_name)
 {
 
@@ -347,16 +346,7 @@ void NgapTask::handleXnHandover(int asAmfId, int64_t amfUeNgapId, int64_t ranUeN
                 asn::SetBitString(sec->eUTRAencryptionAlgorithms, OctetString::FromHex("FFFF")) ;
                 asn::SetBitString(sec->eUTRAintegrityProtectionAlgorithms, OctetString::FromHex("FFFF")) ;
             });
-        //std::printf("check here");
-       /* auto m=m_sessionTree.findBySessionId(ueId,1);
-        std::cout << m << std::endl;
-        auto teid=m_sessionTree.return_teid_map();
-        if (teid.size() >= m){
-            std::cout << teid[m] << std::endl;
-        }*/
-        /*for (int i = 0; i < v.size(); i++){
-            std::cout << v[i] << " ";
-        };*/
+
         asn::ngap::AddProtocolIeIfUsable(
             *pdu, asn_DEF_ASN_NGAP_PDUSessionResourceToBeSwitchedDLList, ASN_NGAP_ProtocolIE_ID_id_PDUSessionResourceToBeSwitchedDLList,
             ASN_NGAP_Criticality_reject, [this](void *mem) {
@@ -399,7 +389,7 @@ void NgapTask::handleXnHandover(int asAmfId, int64_t amfUeNgapId, int64_t ranUeN
         m_logger->err("NGAP APER encoding failed");
     else
     {
-        auto *msg = new NwGnbSctp(NwGnbSctp::SEND_MESSAGE);
+        auto *msg = new NmGnbSctp(NmGnbSctp::SEND_MESSAGE);
         msg->clientId = ctxtId;
         msg->stream = ue->uplinkStream;
         msg->buffer = UniqueBuffer{buffer, static_cast<size_t>(encoded)};
