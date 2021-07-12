@@ -176,6 +176,7 @@ void GnbCmdHandler::handleCmdImpl(NmGnbCliCommand &msg)
                 {"AMF ID", std::to_string(ue->associatedAmfId)},
                 {"AMF CTX ID", std::to_string(amf->ctxId)},
                 {"AMF name",amf->amfName},
+                {"copy for handover",std::to_string(ue->associatedAmfId)+ ","+ std::to_string(ue->amfUeNgapId)+","+std::to_string(ue->ranUeNgapId)+","+std::to_string(amf->ctxId)+","+std::to_string(ue->uplinkStream)+","+amf->amfName},
             }));
             sendResult(msg.address, json.dumpYaml());
         }
