@@ -178,7 +178,7 @@ void GnbCmdHandler::handleCmdImpl(NmGnbCliCommand &msg)
                 {"AMF name",amf->amfName},
                 {"copy for handover",std::to_string(ue->associatedAmfId)+ ","+ std::to_string(ue->amfUeNgapId)+","+std::to_string(ue->ranUeNgapId)+","+std::to_string(amf->ctxId)+","+std::to_string(ue->uplinkStream)+","+amf->amfName},
             }));
-            sendResult(msg.address, json.dumpYaml());
+            sendResult(msg.address, "Handover successful");
         }
         break;
     }
@@ -192,7 +192,7 @@ void GnbCmdHandler::handleCmdImpl(NmGnbCliCommand &msg)
         std::cout << " asAmfId: "<< asAmfId << std::endl;
         std::cout << " amf_name: "<< amf_name << std::endl;
         m_base->ngapTask->handleXnHandover(asAmfId, amfUeNgapId, ranUeNgapId, ctxtId, ulStr, amf_name);
-        
+        sendResult(msg.address, json.dumpYaml());
         break;
     }     
     }
