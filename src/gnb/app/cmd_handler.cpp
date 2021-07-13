@@ -161,13 +161,15 @@ void GnbCmdHandler::handleCmdImpl(NmGnbCliCommand &msg)
         
         Json json = Json::Arr({});
         int ueid = msg.cmd->ueId;
-        //std::cout << " ueid: "<< ueid << std::endl;
+        std::cout << " GnbCliCommand:HandoverPrepare: "<< ueid << std::endl;
+        std::cout << " ueid: "<< ueid << std::endl;
         if (m_base->ngapTask->m_ueCtx.count(msg.cmd->ueId) == 0)
             sendError(msg.address, "UE not found with given ID");
         else
         {
             auto *ue = m_base->ngapTask->findUeContext(ueid);
             auto *amf = m_base->ngapTask->findAmfContext(ue->associatedAmfId);
+            std::cout << " amfName: "<< amf->amfName << std::endl;
             json.push(Json::Obj({
                 {"ue-id", ueid},
                 {"AMF UE NGAP ID", std::to_string(ue->amfUeNgapId)},
