@@ -161,6 +161,7 @@ void GnbCmdHandler::handleCmdImpl(NmGnbCliCommand &msg)
         
         Json json = Json::Arr({});
         int ueid = msg.cmd->ueId;
+        std::cout << " GnbCliCommand:HandoverPrepare: "<< ueid << std::endl;
         std::cout << " ueid: "<< ueid << std::endl;
         if (m_base->ngapTask->m_ueCtx.count(msg.cmd->ueId) == 0)
             sendError(msg.address, "UE not found with given ID");
