@@ -19,6 +19,8 @@
 #include <asn/rrc/ASN_RRC_DL-DCCH-Message.h>
 #include <asn/rrc/ASN_RRC_DLInformationTransfer-IEs.h>
 #include <asn/rrc/ASN_RRC_DLInformationTransfer.h>
+#include <asn/rrc/ASN_RRC_RRCReconfiguration.h>
+#include <asn/rrc/ASN_RRC_RRCReconfiguration-IEs.h>
 #include <asn/rrc/ASN_RRC_PCCH-Message.h>
 #include <asn/rrc/ASN_RRC_Paging.h>
 #include <asn/rrc/ASN_RRC_PagingRecord.h>
@@ -41,6 +43,7 @@ namespace nr::gnb
 
 void GnbRrcTask::handleDownlinkNasDelivery(int ueId, const OctetString &nasPdu)
 {
+    m_logger->info("handleDownlinkNasDelivery [%d]", ueId);
     auto *pdu = asn::New<ASN_RRC_DL_DCCH_Message>();
     pdu->message.present = ASN_RRC_DL_DCCH_MessageType_PR_c1;
     pdu->message.choice.c1 =
@@ -56,6 +59,26 @@ void GnbRrcTask::handleDownlinkNasDelivery(int ueId, const OctetString &nasPdu)
 
     sendRrcMessage(ueId, pdu);
 }
+
+void GnbRrcTask::rrcConnReconfigurationCommand(int ueId)
+{
+    m_logger->info("rrcConnReconfigurationCommand[%d]", ueId);
+    auto *pdu = asn::New<ASN_RRC_DL_DCCH_Message>();
+    pdu->message.present = ASN_RRC_DL_DCCH_MessageType_PR_c1;
+    pdu->message.choice.c1 =
+        asn::New<ASN_RRC_DL_DCCH_MessageType_t::ASN_RRC_DL_DCCH_MessageType_u::ASN_RRC_DL_DCCH_MessageType__c1>();
+    pdu->message.choice.c1->present = ASN_RRC_DL_DCCH_MessageType__c1_PR_rrcReconfiguration;
+    pdu->message.choice.c1->choice.rrcReconfiguration = asn::New<ASN_RRC_RRCReconfiguration>();
+
+    //auto &c1 = pdu->message.choice.c1->choice.dlInformationTransfer->criticalExtensions;
+    //c1.present = ASN_RRC_DLInformationTransfer__criticalExtensions_PR_dlInformationTransfer;
+    //c1.choice.dlInformationTransfer = asn::New<ASN_RRC_DLInformationTransfer_IEs>();
+    //c1.choice.dlInformationTransfer->dedicatedNAS_Message = asn::New<ASN_RRC_DedicatedNAS_Message_t>();
+    //asn::SetOctetString(*c1.choice.dlInformationTransfer->dedicatedNAS_Message, nasPdu);
+
+    sendRrcMessage(ueId, pdu);
+}
+
 
 void GnbRrcTask::deliverUplinkNas(int ueId, OctetString &&nasPdu)
 {
