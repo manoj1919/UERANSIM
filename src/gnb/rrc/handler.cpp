@@ -60,6 +60,7 @@ void GnbRrcTask::handleDownlinkNasDelivery(int ueId, const OctetString &nasPdu)
     sendRrcMessage(ueId, pdu);
 }
 
+
 void GnbRrcTask::rrcConnReconfigurationCommand(int ueId)
 {
     m_logger->info("rrcConnReconfigurationCommand[%d]", ueId);
